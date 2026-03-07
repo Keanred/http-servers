@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { config } from 'src/config.js';
+import { config } from '../config.js';
 
 export const resetHandler = (req: Request, res: Response) => {
   config.serverHits = 0;

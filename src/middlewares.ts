@@ -1,5 +1,5 @@
-import { config } from './config';
 import { NextFunction, Request, Response } from 'express';
+import { config } from './config.js';
 
 type Middleware = (req: Request, res: Response, next: NextFunction) => void;
 
