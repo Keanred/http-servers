@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
+import type { RequestBody } from '../types/RequestBody.js';
+import { BadRequestError } from '../errors/BadRequestError.js';
 
-type RequestBody = {
-  body: string;
-};
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 const profaneReplacement = "****";
 
@@ -18,7 +17,7 @@ export const validateHandler = async (
   }
 
   if (body.length > 140) {
-    throw new Error("Chirp is too long");
+    throw new BadRequestError("Chirp is too long. Max length is 140");
   }
 
   const cleanedBody = body
