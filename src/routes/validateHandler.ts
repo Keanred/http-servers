@@ -1,13 +1,30 @@
 import { Request, Response } from "express";
 
-export const validateHandler = (req: Request, res: Response) => {
+type RequestBody = {
+  body: string;
+};
+const badWords = ["kerfuffle", "sharbert", "fornax"];
+const profaneReplacement = "****";
+
+export const validateHandler = (req: Request<unknown, unknown, RequestBody>, res: Response) => {
   try {
-    const body = req.body;
+    const { body } = req.body;
+
+    if (typeof body !== "string") {
+      return res.status(400).json({ error: "Something went wrong" });
+    }
+
     if (body.length > 140) {
       return res.status(400).json({ error: "Chirp is too long" });
     }
-    return res.status(200).json({ "valid": true });
+
+    const cleanedBody = body
+      .split(" ")
+      .map((word) => badWords.includes(word.toLowerCase()) ? profaneReplacement : word)
+      .join(" ");
+
+    return res.status(200).json({ cleanedBody: cleanedBody });
   } catch (error) {
     return res.status(400).json({ error: "Something went wrong" });
   }
-}
+};
