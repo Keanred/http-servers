@@ -10,25 +10,14 @@ export const middlewareLogResponses: Middleware = (req: Request, res: Response, 
     }
   });
   next();
-}
+};
 
 export const middlewareMetricsInc: Middleware = (req: Request, res: Response, next: NextFunction): void => {
   config.serverHits += 1;
   next();
-}
+};
 
-export const bodyParser = async (req: Request, res: Response) => {
-  let body = "";
-
-  req.on("data", (chunk) => {
-    body += chunk;
-  });
-
-  req.on("end", () => {
-    try {
-      req.body = JSON.parse(body);
-    } catch (error) {
-      res.status(400).send("Invalid JSON");
-    }
-  });
-}
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+  console.log(err);
+  res.status(500).json({ error: 'Something went wrong on our end' });
+};
