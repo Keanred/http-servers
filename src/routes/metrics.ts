@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { config } from "../config.js";
 
-export const metricsHandler = (req: Request, res: Response) => {
+export const metrics = (req: Request, res: Response) => {
   res.status(200).set("Content-Type", "text/html; charset=utf8").send(`
 <html>
   <body>

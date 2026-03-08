@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { config } from './config.js';
-import type { Middleware } from './types/Middleware.js';
+import type { Middleware } from './types/middleware.js';
+import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from './errors/errors';
 
 export const middlewareLogResponses: Middleware = (req: Request, res: Response, next: NextFunction): void => {
   res.on('finish', () => {
@@ -22,21 +23,18 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
   let status = 500;
   let message = 'Internal Server Error';
 
-  const customErrors = ['BadRequestError', 'UnauthorizedError', 'ForbiddenError', 'NotFoundError'];
-
-  if (customErrors.includes(err.name)) {
-    if (err.name === 'BadRequestError') {
-      status = 400;
-    } else if (err.name === 'UnauthorizedError') {
-      status = 401;
-    } else if (err.name === 'ForbiddenError') {
-      status = 403;
-    } else if (err.name === 'NotFoundError') {
-      status = 404;
-    }
+  if (err instanceof BadRequestError) {
+    status = 400;
     message = err.message;
-    res.status(status).json({ error: message });
-  } else {
-    res.status(status).json({ error: message });
+  } else if (err instanceof UnauthorizedError) {
+    status = 401;
+    message = err.message;
+  } else if (err instanceof ForbiddenError) {
+    status = 403;
+    message = err.message;
+  } else if (err instanceof NotFoundError) {
+    status = 404;
+    message = err.message;
   }
+  res.status(status).json({ error: message });
 };

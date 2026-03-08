@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import type { RequestBody } from '../types/RequestBody.js';
-import { BadRequestError } from '../errors/BadRequestError.js';
+import type { RequestBody } from '../types/requestBody';
+import { BadRequestError } from '../errors/errors';
 
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 const profaneReplacement = "****";
 
-export const validateHandler = async (
+export const validate = async (
   req: Request<unknown, unknown, RequestBody>,
   res: Response,
 ): Promise<void> => {
