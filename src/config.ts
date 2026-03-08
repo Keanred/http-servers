@@ -1,27 +1,34 @@
 import type { Config } from './types/apiConfig';
 import type { MigrationConfig } from "drizzle-orm/migrator";
+import path from 'path';
 
 const migrationConfig: MigrationConfig = {
-  migrationsFolder: "./src/db/migrations",
+  migrationsFolder: path.resolve(import.meta.dirname, "db"),
 };
 
 process.loadEnvFile();
 
 const checkEnvVariables = () => {
   const url = process.env.DB_URL;
+  const platform = process.env.PLATFORM;
   if (!url) {
-    new Error('DB_URL environment variable is not set');
+    throw new Error('DB_URL environment variable is not set');
   }
-  return url;
+  if (!platform) {
+    throw new Error('PLATFORM environment variable is not set');
+  }
+  return [url, platform];
 };
 
+const [dbURL, platform] = checkEnvVariables();
 export const config: Config = {
   apiConfig: {
     serverHits: 0,
+    platform: platform as string,
     PORT: 8080,
   },
   dbConfig: {
-    dbURL: checkEnvVariables() as string,
+    dbURL: dbURL as string,
     migrationConfig: migrationConfig,
   },
 };

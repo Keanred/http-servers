@@ -8,6 +8,7 @@ import { validate } from './routes/validate.js';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
+import { createNewUser } from './routes/users.js';
 
 const migrationClient = postgres(config.dbConfig.dbURL, { max: 1 });
 await migrate(drizzle(migrationClient), config.dbConfig.migrationConfig);
@@ -19,9 +20,8 @@ app.use(middlewareLogResponses);
 
 app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.get('/api/healthz', readiness);
-app.post('/api/validate_chirp', (req, res, next) => {
-  Promise.resolve(validate(req, res)).catch(next);
-});
+app.post('/api/validate_chirp', validate);
+app.post('/api/users', createNewUser);
 app.get('/admin/metrics', metrics);
 app.post('/admin/reset', reset);
 

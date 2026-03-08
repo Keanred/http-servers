@@ -2,6 +2,7 @@ import type { MigrationConfig } from "drizzle-orm/migrator";
 
 export type APIConfig = {
   serverHits: number;
+  platform: string;
   PORT: number;
 };
 
