@@ -5,6 +5,12 @@ import { metrics } from './routes/metrics.js';
 import { reset } from './routes/reset.js';
 import { config } from './config.js';
 import { validate } from './routes/validate.js';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import postgres from 'postgres';
+
+const migrationClient = postgres(config.dbConfig.dbURL, { max: 1 });
+await migrate(drizzle(migrationClient), config.dbConfig.migrationConfig);
 
 const app = express();
 app.use(express.json());
@@ -21,6 +27,6 @@ app.post('/admin/reset', reset);
 
 app.use(errorHandler);
 
-app.listen(config.PORT, () => {
-  console.log(`Server is running on port http://localhost:${config.PORT}`);
+app.listen(config.apiConfig.PORT, () => {
+  console.log(`Server is running on port http://localhost:${config.apiConfig.PORT}`);
 });

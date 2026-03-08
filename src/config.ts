@@ -1,4 +1,9 @@
-import type { APIConfig } from './types/apiConfig';
+import type { Config } from './types/apiConfig';
+import type { MigrationConfig } from "drizzle-orm/migrator";
+
+const migrationConfig: MigrationConfig = {
+  migrationsFolder: "./src/db/migrations",
+};
 
 process.loadEnvFile();
 
@@ -10,8 +15,13 @@ const checkEnvVariables = () => {
   return url;
 };
 
-export const config: APIConfig = {
-  serverHits: 0,
-  PORT: 8080,
-  dbURL: checkEnvVariables() as string,
+export const config: Config = {
+  apiConfig: {
+    serverHits: 0,
+    PORT: 8080,
+  },
+  dbConfig: {
+    dbURL: checkEnvVariables() as string,
+    migrationConfig: migrationConfig,
+  },
 };

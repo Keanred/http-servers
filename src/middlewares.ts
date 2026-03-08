@@ -13,7 +13,7 @@ export const middlewareLogResponses: Middleware = (req: Request, res: Response, 
 };
 
 export const middlewareMetricsInc: Middleware = (req: Request, res: Response, next: NextFunction): void => {
-  config.serverHits += 1;
+  config.apiConfig.serverHits += 1;
   next();
 };
 
