@@ -66,25 +66,25 @@ describe('JWT Tests', () => {
   });
 
   it('should throw an error for an invalid token', () => {
-    expect(() => validateJWT(token + 'invalid', secret)).toThrow();
+    expect(() => validateJWT(token + 'invalid', secret)).toThrow(UnauthorizedError);
   });
 
   it('should throw for expired token', () => {
     const expiredToken = makeJWT(userID, -1, secret); // negative expiry
-    expect(() => validateJWT(expiredToken, secret)).toThrow();
+    expect(() => validateJWT(expiredToken, secret)).toThrow(UnauthorizedError);
   });
 
   it('should throw for token with wrong secret', () => {
-    expect(() => validateJWT(token, 'wrong_secret')).toThrow();
+    expect(() => validateJWT(token, 'wrong_secret')).toThrow(UnauthorizedError);
   });
 
   it('should throw for malformed token', () => {
-    expect(() => validateJWT('not.a.jwt', secret)).toThrow();
+    expect(() => validateJWT('not.a.jwt', secret)).toThrow(UnauthorizedError);
   });
 
   it('should throw for missing userID', () => {
     const noUserToken = makeJWT('', 3600, secret);
-    expect(() => validateJWT(noUserToken, secret)).toThrow();
+    expect(() => validateJWT(noUserToken, secret)).toThrow(UnauthorizedError);
   });
 });
 

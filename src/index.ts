@@ -10,6 +10,8 @@ import postgres from 'postgres';
 import { createNewUser } from './routes/users';
 import { createChirp, getChirps, getChirp } from './routes/chirps';
 import { login } from './routes/login';
+import { refreshToken } from './routes/refresh';
+import { revokeToken } from './routes/revoke';
 
 const migrationClient = postgres(config.dbConfig.dbURL, { max: 1 });
 await migrate(drizzle(migrationClient), config.dbConfig.migrationConfig);
@@ -26,6 +28,8 @@ app.get('/api/chirps', getChirps);
 app.get('/api/chirps/:id', getChirp);
 app.post('/api/chirps', createChirp);
 app.post('/api/login', login);
+app.post('/api/refresh', refreshToken);
+app.post('/api/revoke', revokeToken);
 app.get('/admin/metrics', metrics);
 app.post('/admin/reset', reset);
 

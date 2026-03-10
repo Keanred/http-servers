@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import type { JwtPayload } from 'jsonwebtoken';
 import { UnauthorizedError } from './errors/errors';
 import { Request } from 'express';
+import { randomBytes } from 'node:crypto';
 
 type payload = Pick<JwtPayload, 'iss' | 'sub' | 'iat' | 'exp'>;
 
@@ -15,23 +16,30 @@ export const checkPasswordHash = async (password: string, hash: string): Promise
 };
 
 export const makeJWT = (userID: string, expiresIn: number, secret: string): string => {
-  const expiresInSeconds = expiresIn > 3600 ? 3600 : expiresIn;
   const payload: payload = {
     iss: 'chirpy',
     sub: userID,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + expiresInSeconds,
+    exp: Math.floor(Date.now() / 1000) + expiresIn,
   };
   return jwt.sign(payload, secret);
 }
 
 export const validateJWT = (token: string, secret: string): string => {
-  jwt.verify(token, secret);
-  const payload = jwt.decode(token) as payload;
-  if (!payload || !payload.sub) {
+  try {
+    const decoded = jwt.verify(token, secret) as payload | string;
+    if (!decoded || typeof decoded === 'string' || !decoded.sub) {
+      throw new UnauthorizedError('Invalid token');
+    }
+
+    return decoded.sub;
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      throw error;
+    }
+
     throw new UnauthorizedError('Invalid token');
   }
-  return payload.sub;
 };
 
 export const getBearerToken = (req: Request): string => {
@@ -49,3 +57,8 @@ export const getBearerToken = (req: Request): string => {
   }
   return token;
 }
+
+export const makeRefreshToken = () => {
+    return randomBytes(32).toString('hex');
+}
+

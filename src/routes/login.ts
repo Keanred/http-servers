@@ -4,15 +4,20 @@ import { getUserByEmail } from '../db/queries/users';
 import { checkPasswordHash } from '../auth';
 import { makeJWT } from '../auth';
 import { config } from '../config';
+import { makeRefreshToken } from '../auth';
+import { insertRefreshToken } from '../db/queries/refreshTokens';
 
 type LoginParams = {
   email: string;
   password: string;
-  expiresInSeconds?: number;
 }
 
+const EXPIRATION_TIME_SECONDS = 3600;
+const REFRESH_TOKEN_EXPIRATION_SECONDS = 60 * 24 * 60 * 60;
+const MILLISECONDS_PER_SECOND = 1000;
+
 export const login = async (req: Request, res: Response) => {
-  const { email, password, expiresInSeconds } = req.body as LoginParams;
+  const { email, password } = req.body as LoginParams;
   if (!email) {
     throw new BadRequestError('Email is required');
   }
@@ -29,9 +34,22 @@ export const login = async (req: Request, res: Response) => {
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  const token = makeJWT(user.id, expiresInSeconds || 3600, config.apiConfig.SECRET);
+  const token = makeJWT(user.id,  EXPIRATION_TIME_SECONDS, config.apiConfig.SECRET);
+  const refreshToken = makeRefreshToken();
+  const refreshTokenExpiresAt = new Date(
+    Date.now() + REFRESH_TOKEN_EXPIRATION_SECONDS * MILLISECONDS_PER_SECOND,
+  );
+  const returnedRefreshToken = await insertRefreshToken({
+    token: refreshToken,
+    userId: user.id,
+    expiresAt: refreshTokenExpiresAt,
+  });
+
+  if (!returnedRefreshToken) {
+    throw new Error('Failed to create refresh token');
+  }
 
   const { hashedPassword, ...userResponse } = user;
 
-  res.status(200).json({userResponse, token});
+  res.status(200).json({userResponse, token, refreshToken});
 }

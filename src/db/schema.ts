@@ -1,4 +1,5 @@
 import { pgTable, timestamp, varchar, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export type NewUser = typeof users.$inferInsert;
 
@@ -24,4 +25,18 @@ export const chirps = pgTable("chirps", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+});
+
+export const refreshTokens = pgTable("refresh_tokens", {
+  token: varchar("token", { length: 512 }).primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  revokedAt: timestamp("revoked_at").default(sql`NULL`),
 });
