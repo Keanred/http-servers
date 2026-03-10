@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { Request, Response } from "express";
 import { BadRequestError, InternalServerError } from '../errors/errors';
-import { insertChirp } from '../db/queries/chirps';
+import { getAllChirps, insertChirp } from '../db/queries/chirps';
 
 type ChirpParams = {
   body: string,
@@ -35,3 +35,11 @@ export const createChirp = async (req: Request, res: Response) => {
 
   res.status(201).json(result);
 };
+
+export const getChirps = async (req: Request, res: Response) => {
+  const result = await getAllChirps();
+  if (!result) {
+    throw new InternalServerError("Failed to fetch chirps");
+  }
+  res.status(200).json(result);
+}
