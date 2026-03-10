@@ -1,6 +1,7 @@
 import { db } from "../index";
 import { chirps } from "../schema";
 import { asc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export type Chirp = typeof chirps.$inferInsert;
 
@@ -11,5 +12,10 @@ export const insertChirp = async (chirp: Chirp) => {
 
 export const getAllChirps = async () => {
   const result = await db.select().from(chirps).orderBy(asc(chirps.createdAt));
+  return result;
+}
+
+export const getChirpById = async (id: string) => {
+  const [result] = await db.select().from(chirps).where(eq(chirps.id, id));
   return result;
 }

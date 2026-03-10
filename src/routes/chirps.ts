@@ -1,18 +1,21 @@
-import { UUID } from "crypto";
 import { Request, Response } from "express";
-import { BadRequestError, InternalServerError } from '../errors/errors';
-import { getAllChirps, insertChirp } from '../db/queries/chirps';
+import { BadRequestError, NotFoundError, InternalServerError } from '../errors/errors';
+import { getAllChirps, getChirpById, insertChirp } from '../db/queries/chirps';
 
-type ChirpParams = {
+type CreateChirpParams = {
   body: string,
-  userId: UUID
+  userId: string
+}
+
+type GetChirpParams = {
+  id: string
 }
 
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 const profaneReplacement = "****";
 
 export const createChirp = async (req: Request, res: Response) => {
-  const { body, userId }: ChirpParams = req.body;
+  const { body, userId } = req.body as CreateChirpParams;
 
   if (!body || !userId) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -40,6 +43,18 @@ export const getChirps = async (req: Request, res: Response) => {
   const result = await getAllChirps();
   if (!result) {
     throw new InternalServerError("Failed to fetch chirps");
+  }
+  res.status(200).json(result);
+}
+
+export const getChirp = async (req: Request, res: Response) => {
+  const { id } = req.params as GetChirpParams;
+  if (!id) {
+    throw new BadRequestError("Missing chirp ID");
+  }
+  const result = await getChirpById(id);
+  if (!result) {
+    throw new NotFoundError("Chirp not found");
   }
   res.status(200).json(result);
 }
