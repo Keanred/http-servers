@@ -7,7 +7,7 @@ type params = {
 }
 
 export const createNewUser = async (req: Request, res: Response) => {
-  const email: params = req.body.email;
+  const email: params = req.body;
   if (!email) {
     throw new BadRequestError('Email is required');
   }

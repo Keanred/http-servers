@@ -3,7 +3,7 @@ import type { MigrationConfig } from "drizzle-orm/migrator";
 import path from 'path';
 
 const migrationConfig: MigrationConfig = {
-  migrationsFolder: path.resolve(import.meta.dirname, "db"),
+  migrationsFolder: path.resolve(process.cwd(), "src/db"),
 };
 
 process.loadEnvFile();
