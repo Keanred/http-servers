@@ -5,7 +5,7 @@ import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } fro
 
 export const middlewareLogResponses: Middleware = (req: Request, res: Response, next: NextFunction): void => {
   res.on('finish', () => {
-    if (res.statusCode !== 200) {
+    if (res.statusCode >= 300) {
       console.log(`[NON-OK] ${req.method} ${req.path} - Status: ${res.statusCode}`);
     }
   });
