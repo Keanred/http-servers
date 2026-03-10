@@ -1,3 +1,5 @@
+import { getBearerToken } from './auth';
+import { UnauthorizedError } from './errors/errors';
 import { describe, it, expect, beforeAll } from 'vitest';
 import { makeJWT, validateJWT, hashPassword, checkPasswordHash } from './auth';
 
@@ -83,5 +85,52 @@ describe('JWT Tests', () => {
   it('should throw for missing userID', () => {
     const noUserToken = makeJWT('', 3600, secret);
     expect(() => validateJWT(noUserToken, secret)).toThrow();
+  });
+});
+
+const makeReq = (headerValue?: string) => {
+  return {
+    get: (name: string) => {
+      if (name === 'Authorization') return headerValue;
+      return undefined;
+    }
+  } as any;
+};
+
+describe('getBearerToken', () => {
+  it('should return the token when Authorization header is valid', () => {
+    const req = makeReq('Bearer mytoken123');
+    const token = getBearerToken(req);
+    expect(token).toBe('mytoken123');
+  });
+
+  it('should throw UnauthorizedError if Authorization header is missing', () => {
+    const req = makeReq(undefined);
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
+  });
+
+  it('should throw UnauthorizedError if Authorization header is malformed (no Bearer)', () => {
+    const req = makeReq('mytoken123');
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
+  });
+
+  it('should throw UnauthorizedError if Authorization header uses lowercase bearer', () => {
+    const req = makeReq('bearer mytoken123');
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
+  });
+
+  it('should throw UnauthorizedError if Authorization header has extra spaces', () => {
+    const req = makeReq('Bearer    spacedtoken');
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
+  });
+
+  it('should throw UnauthorizedError if Authorization header has missing token', () => {
+    const req = makeReq('Bearer ');
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
+  });
+
+  it('should throw UnauthorizedError if Authorization header has too many parts', () => {
+    const req = makeReq('Bearer token extra');
+    expect(() => getBearerToken(req)).toThrow(UnauthorizedError);
   });
 });

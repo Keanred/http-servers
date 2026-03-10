@@ -4,6 +4,7 @@ export type APIConfig = {
   serverHits: number;
   platform: string;
   PORT: number;
+  SECRET: string;
 };
 
 export type DBConfig = {

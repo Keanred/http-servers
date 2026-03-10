@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { BadRequestError, NotFoundError, InternalServerError } from '../errors/errors';
+import { UnauthorizedError, BadRequestError, NotFoundError, InternalServerError } from '../errors/errors';
 import { getAllChirps, getChirpById, insertChirp } from '../db/queries/chirps';
+import { getBearerToken, validateJWT } from '../auth';
+import { config } from "src/config";
 
 type CreateChirpParams = {
   body: string,
-  userId: string
 }
 
 type GetChirpParams = {
@@ -15,9 +16,13 @@ const badWords = ["kerfuffle", "sharbert", "fornax"];
 const profaneReplacement = "****";
 
 export const createChirp = async (req: Request, res: Response) => {
-  const { body, userId } = req.body as CreateChirpParams;
-
-  if (!body || !userId) {
+  const { body } = req.body as CreateChirpParams;
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.apiConfig.SECRET);
+  if (!userId) {
+    throw new UnauthorizedError("Invalid token");
+  }
+  if (!body) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 

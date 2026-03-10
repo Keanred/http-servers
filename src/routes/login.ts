@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import { BadRequestError, UnauthorizedError } from "src/errors/errors";
 import { getUserByEmail } from '../db/queries/users';
 import { checkPasswordHash } from '../auth';
+import { makeJWT } from '../auth';
+import { config } from '../config';
 
 type LoginParams = {
   email: string;
   password: string;
+  expiresInSeconds?: number;
 }
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body as LoginParams;
+  const { email, password, expiresInSeconds } = req.body as LoginParams;
   if (!email) {
     throw new BadRequestError('Email is required');
   }
@@ -25,7 +28,10 @@ export const login = async (req: Request, res: Response) => {
   if (!isPasswordValid) {
     throw new UnauthorizedError('Invalid email or password');
   }
+
+  const token = makeJWT(user.id, expiresInSeconds || 3600, config.apiConfig.SECRET);
+
   const { hashedPassword, ...userResponse } = user;
 
-  res.status(200).json(userResponse);
+  res.status(200).json({userResponse, token});
 }
