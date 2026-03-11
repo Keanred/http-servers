@@ -8,7 +8,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 import { createNewUser, updateExistingUser } from './routes/users';
-import { createChirp, getChirps, getChirp } from './routes/chirps';
+import { createChirp, getChirps, getChirp, deleteChirp } from './routes/chirps';
 import { login } from './routes/login';
 import { refreshToken } from './routes/refresh';
 import { revokeToken } from './routes/revoke';
