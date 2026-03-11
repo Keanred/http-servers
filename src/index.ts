@@ -16,6 +16,7 @@ import { chirpyRedWebhook } from './routes/chirpyred';
 
 const migrationClient = postgres(config.dbConfig.dbURL, { max: 1 });
 await migrate(drizzle(migrationClient), config.dbConfig.migrationConfig);
+await migrationClient.end();
 
 const app = express();
 app.use(express.json());

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { UnauthorizedError, BadRequestError, NotFoundError, InternalServerError, ForbiddenError } from '../errors/errors';
 import { deleteChirpById, getAllChirps, getChirpById, getChirpsByAuthorId, insertChirp } from '../db/queries/chirps';
 import { getBearerToken, validateJWT } from '../auth';
-import { config } from "src/config";
+import { config } from '../config';
 
 type CreateChirpParams = {
   body: string,
@@ -23,7 +23,7 @@ export const createChirp = async (req: Request, res: Response) => {
     throw new UnauthorizedError("Invalid token");
   }
   if (!body) {
-    return res.status(400).json({ error: "Missing required fields" });
+    throw new BadRequestError("Missing required fields");
   }
 
   if (body.length > 140) {

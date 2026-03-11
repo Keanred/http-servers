@@ -8,7 +8,7 @@ const config: Config = {
   singleQuote: true,
   bracketSpacing: true,
   endOfLine: 'lf',
-  plugins: ['prettier-plugin-organize-imports'],
+
 };
 
 export default config;

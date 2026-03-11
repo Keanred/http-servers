@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { config } from "../config.js";
+import { config } from "../config";
 
 export const metrics = (req: Request, res: Response) => {
   res.status(200).set("Content-Type", "text/html; charset=utf8").send(`

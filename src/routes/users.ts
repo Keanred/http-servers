@@ -23,12 +23,12 @@ export const createNewUser = async (req: Request, res: Response) => {
   const returnedPassword = await hashPassword(password);
 
   const user = await createUser({ email, hashedPassword: returnedPassword });
-  const { hashedPassword, ...userResponse } = user;
-  const userWithoutPassword: NewUser = userResponse;
-
   if (!user) {
     throw new Error('Failed to create user');
   }
+
+  const { hashedPassword, ...userResponse } = user;
+  const userWithoutPassword: NewUser = userResponse;
 
   res.status(201).json(userWithoutPassword);
 }

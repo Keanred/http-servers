@@ -177,7 +177,7 @@ describe('revokeToken', () => {
     const req = makeReq(undefined);
     const res = makeRes();
 
-    await expect(revokeToken(req, res)).rejects.toThrow(BadRequestError);
+    await expect(revokeToken(req, res)).rejects.toThrow(UnauthorizedError);
     expect(revokeRefreshTokenMock).not.toHaveBeenCalled();
   });
 });

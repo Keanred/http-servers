@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { BadRequestError, UnauthorizedError } from "../errors/errors";
 import { getUserByEmail } from '../db/queries/users';
-import { checkPasswordHash } from '../auth';
-import { makeJWT } from '../auth';
+import { checkPasswordHash, makeJWT, makeRefreshToken } from '../auth';
 import { config } from '../config';
-import { makeRefreshToken } from '../auth';
 import { insertRefreshToken } from '../db/queries/refreshTokens';
 
 type LoginParams = {

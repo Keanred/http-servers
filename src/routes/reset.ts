@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { config } from '../config.js';
-import { deleteUsers } from 'src/db/queries/users.js';
+import { config } from '../config';
+import { deleteUsers } from '../db/queries/users';
 
 export const reset = async (req: Request, res: Response) => {
   if (config.apiConfig.platform !== 'dev') {

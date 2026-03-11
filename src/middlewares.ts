@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { config } from './config.js';
-import type { Middleware } from './types/middleware.js';
-import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from './errors/errors';
+import { config } from './config';
+import type { Middleware } from './types/middleware';
+import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError, InternalServerError } from './errors/errors';
 
 export const middlewareLogResponses: Middleware = (req: Request, res: Response, next: NextFunction): void => {
   res.on('finish', () => {
@@ -34,6 +34,9 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     message = err.message;
   } else if (err instanceof NotFoundError) {
     status = 404;
+    message = err.message;
+  } else if (err instanceof InternalServerError) {
+    status = 500;
     message = err.message;
   }
   res.status(status).json({ error: message });

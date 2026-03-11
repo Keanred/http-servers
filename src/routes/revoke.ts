@@ -1,20 +1,10 @@
 import { Request, Response } from "express";
-import { BadRequestError, UnauthorizedError } from "../errors/errors";
+import { UnauthorizedError } from "../errors/errors";
 import { getRefreshToken, revokeRefreshToken } from '../db/queries/refreshTokens';
+import { getBearerToken } from '../auth';
 
 export const revokeToken = async (req: Request, res: Response) => {
-  const authorizationHeader = req.get('Authorization');
-  if (!authorizationHeader) {
-    throw new BadRequestError('Missing Authorization header');
-  }
-  const splitHeader = authorizationHeader.split(' ');
-  if (splitHeader.length !== 2 || splitHeader[0] !== 'Bearer') {
-    throw new BadRequestError('Invalid Authorization header format');
-  }
-  const token = splitHeader[1];
-  if (!token || token.trim() === '') {
-    throw new BadRequestError('Missing Bearer token');
-  }
+  const token = getBearerToken(req);
 
   const refreshToken = await getRefreshToken(token);
   if (!refreshToken) {
