@@ -12,6 +12,7 @@ import { createChirp, getChirps, getChirp, deleteChirp } from './routes/chirps';
 import { login } from './routes/login';
 import { refreshToken } from './routes/refresh';
 import { revokeToken } from './routes/revoke';
+import { chirpyRedWebhook } from './routes/chirpyred';
 
 const migrationClient = postgres(config.dbConfig.dbURL, { max: 1 });
 await migrate(drizzle(migrationClient), config.dbConfig.migrationConfig);
@@ -34,6 +35,7 @@ app.post('/api/refresh', refreshToken);
 app.post('/api/revoke', revokeToken);
 app.get('/admin/metrics', metrics);
 app.post('/admin/reset', reset);
+app.post('/api/polka/webhooks', chirpyRedWebhook);
 
 app.use(errorHandler);
 

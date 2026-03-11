@@ -62,3 +62,19 @@ export const makeRefreshToken = () => {
     return randomBytes(32).toString('hex');
 }
 
+export const getAPIKey = (req: Request): string => {
+  // Authorization: ApiKey THE_KEY_HERE
+  const authHeader = req.get('Authorization');
+  if (!authHeader) {
+    throw new UnauthorizedError('Missing Authorization header');
+  }
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'ApiKey') {
+    throw new UnauthorizedError('Invalid Authorization header format');
+  }
+  const token = parts[1];
+  if (!token || token.trim() === '') {
+    throw new UnauthorizedError('Missing API key');
+  }
+  return token;
+}

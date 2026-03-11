@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UnauthorizedError, BadRequestError, NotFoundError, InternalServerError, ForbiddenError } from '../errors/errors';
-import { deleteChirpById, getAllChirps, getChirpById, insertChirp } from '../db/queries/chirps';
+import { deleteChirpById, getAllChirps, getChirpById, getChirpsByAuthorId, insertChirp } from '../db/queries/chirps';
 import { getBearerToken, validateJWT } from '../auth';
 import { config } from "src/config";
 
@@ -45,7 +45,18 @@ export const createChirp = async (req: Request, res: Response) => {
 };
 
 export const getChirps = async (req: Request, res: Response) => {
-  const result = await getAllChirps();
+  let authorId: string = '';
+  let authorIdQuery = req.query.authorId;
+  const sort = req.query.sort === 'desc' ? 'desc' as const : 'asc' as const;
+  if (typeof authorIdQuery === 'string') {
+    authorId = authorIdQuery;
+    const result = await getChirpsByAuthorId(authorId, sort);
+    if (!result) {
+      throw new InternalServerError("Failed to fetch chirps");
+    }
+    return res.status(200).json(result);
+  }
+  const result = await getAllChirps(sort);
   if (!result) {
     throw new InternalServerError("Failed to fetch chirps");
   }

@@ -1,17 +1,25 @@
 import { db } from "../index";
 import { chirps } from "../schema";
-import { asc } from "drizzle-orm";
+import { asc, desc } from "drizzle-orm";
 import { eq } from "drizzle-orm";
 
 export type Chirp = typeof chirps.$inferInsert;
+export type SortOrder = 'asc' | 'desc';
 
 export const insertChirp = async (chirp: Chirp): Promise<Chirp> => {
   const [result] = await db.insert(chirps).values(chirp).returning();
   return result;
 }
 
-export const getAllChirps = async (): Promise<Chirp[]> => {
-  const result = await db.select().from(chirps).orderBy(asc(chirps.createdAt));
+export const getAllChirps = async (sort: SortOrder = 'asc'): Promise<Chirp[]> => {
+  const orderFn = sort === 'desc' ? desc : asc;
+  const result = await db.select().from(chirps).orderBy(orderFn(chirps.createdAt));
+  return result;
+}
+
+export const getChirpsByAuthorId = async (authorId: string, sort: SortOrder = 'asc'): Promise<Chirp[]> => {
+  const orderFn = sort === 'desc' ? desc : asc;
+  const result = await db.select().from(chirps).where(eq(chirps.userId, authorId)).orderBy(orderFn(chirps.createdAt));
   return result;
 }
 

@@ -94,10 +94,8 @@ describe('login', () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
-      userResponse: {
-        id: 'user-123',
-        email: 'saul@example.com',
-      },
+      id: 'user-123',
+      email: 'saul@example.com',
       token: 'new-access-token',
       refreshToken: 'new-refresh-token',
     });

@@ -5,6 +5,7 @@ export type APIConfig = {
   platform: string;
   PORT: number;
   SECRET: string;
+  POLKA_KEY: string;
 };
 
 export type DBConfig = {

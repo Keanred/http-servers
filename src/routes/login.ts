@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BadRequestError, UnauthorizedError } from "src/errors/errors";
+import { BadRequestError, UnauthorizedError } from "../errors/errors";
 import { getUserByEmail } from '../db/queries/users';
 import { checkPasswordHash } from '../auth';
 import { makeJWT } from '../auth';
@@ -51,5 +51,5 @@ export const login = async (req: Request, res: Response) => {
 
   const { hashedPassword, ...userResponse } = user;
 
-  res.status(200).json({userResponse, token, refreshToken});
+  res.status(200).json({...userResponse, token, refreshToken});
 }

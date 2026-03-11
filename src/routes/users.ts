@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { BadRequestError, UnauthorizedError } from '../errors/errors';
 import { createUser, updateUser } from '../db/queries/users';
 import { getBearerToken, hashPassword, validateJWT } from '../auth';
-import { NewUser } from '../db/schema';
+import { User } from '../db/schema';
 import { config } from '../config';
 
 type CreateUserParams = {
@@ -10,7 +10,7 @@ type CreateUserParams = {
   password: string;
 }
 
-type User = Omit<NewUser, "hashedPassword">;
+type NewUser = Omit<User, "hashedPassword">;
 
 export const createNewUser = async (req: Request, res: Response) => {
   const { email, password } = req.body as CreateUserParams;
@@ -24,7 +24,7 @@ export const createNewUser = async (req: Request, res: Response) => {
 
   const user = await createUser({ email, hashedPassword: returnedPassword });
   const { hashedPassword, ...userResponse } = user;
-  const userWithoutPassword: User = userResponse;
+  const userWithoutPassword: NewUser = userResponse;
 
   if (!user) {
     throw new Error('Failed to create user');

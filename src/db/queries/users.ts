@@ -1,8 +1,8 @@
 import { db } from "../index.js";
-import { NewUser, users } from "../schema.js";
+import { User, users } from "../schema.js";
 import { eq } from "drizzle-orm";
 
-export const createUser = async (user: NewUser) => {
+export const createUser = async (user: User) => {
   const [result] = await db
     .insert(users)
     .values(user)
@@ -20,7 +20,12 @@ export const getUserByEmail = async (email: string) => {
   return result;
 }
 
-export const updateUser = async (userId: string, user: NewUser) => {
+export const updateUser = async (userId: string, user: User) => {
   const [result] = await db.update(users).set(user).where(eq(users.id, userId)).returning();
+  return result;
+}
+
+export const setChirpyRed = async (userId: string, isChirpyRed: boolean) => {
+  const [result] = await db.update(users).set({ isChirpyRed }).where(eq(users.id, userId)).returning();
   return result;
 }
